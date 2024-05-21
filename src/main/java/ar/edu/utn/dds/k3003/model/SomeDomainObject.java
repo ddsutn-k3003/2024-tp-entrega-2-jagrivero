@@ -1,4 +1,4 @@
-package ar.edu.utn.dds.k3003.model;
+/*package ar.edu.utn.dds.k3003.model;
 
 import ar.edu.utn.dds.k3003.model.exceptions.SomeDomainException;
 import java.util.Objects;
@@ -19,3 +19,4 @@ public class SomeDomainObject {
         anAttribute + other.getAnAttribute(), otherAttribute + other.getOtherAttribute());
   }
 }
+*/
