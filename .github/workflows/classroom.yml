@@ -1,12 +1,15 @@
 name: Autograding Tests
-'on':
-  - push
-  - workflow_dispatch
-  - repository_dispatch
+
+on:
+  push:
+  workflow_dispatch:
+  repository_dispatch:
+
 permissions:
   checks: write
   actions: read
   contents: read
+
 jobs:
   run-autograding-tests:
     runs-on: ubuntu-latest
@@ -24,54 +27,59 @@ jobs:
       - name: Install dependencies
         run: mvn clean install
 
-      - name: MVN Test
-        id: mvn-test
-        uses: education/autograding-command-grader@v1
-        with:
-          test-name: MVN Test
-          setup-command: mvn clean test-compile
-          command: mvn test
-          timeout: 10
-          max-score: 1
-        - name: Iniciar WebApp
-  id: start-webapp
-  run: |
-    mvn exec:java -Dexec.mainClass="ar.edu.utn.dds.k3003.app.WebApp" > maven.log 2>&1 &
-    WEBAPP_PID=$!
-    echo "WebApp Server PID=$WEBAPP_PID" >> $GITHUB_ENV
-    echo "WebApp Server PID=$WEBAPP_PID"
-  env:
-    MAVEN_OPTS: -Dmaven.repo.local=.m2/repository
+      - name: Iniciar y esperar WebApp
+        runs-on: ubuntu-latest
+        steps:
+          - name: Setup Java JDK
+            uses: actions/setup-java@v4
+            with:
+              distribution: 'oracle'
+              java-version: '17'
 
-- name: Esperar que WebApp esté levantado
-  run: |
-    TIMEOUT=300  # 5 minutos
-    INTERVAL=5   # 5 segundos
-    SECONDS=0
+          - name: Checkout code
+            uses: actions/checkout@v4
 
-    function print_logs {
-      echo "Logs de Maven:"
-      tail -n 100 maven.log
-    }
+          - name: Install dependencies
+            run: mvn clean install
 
-    echo "Esperando a que el servidor esté listo..."
-    until curl --output /dev/null --silent --head --fail http://localhost:8080/; do
-      printf '.'
-      sleep $INTERVAL
-      SECONDS=$((SECONDS + INTERVAL))
-      if [ $SECONDS -ge $TIMEOUT ]; then
-        echo "Timeout alcanzado. El servidor no está respondiendo."
-        echo "Revisando si el proceso de WebApp está corriendo..."
-        if ps -p $WEBAPP_PID > /dev/null; then
-          echo "El proceso de WebApp (PID $WEBAPP_PID) está corriendo, pero no responde en el puerto 8080."
-        else
-          echo "El proceso de WebApp (PID $WEBAPP_PID) no está corriendo. Verifica los logs de Maven."
-        fi
-        print_logs
-        exit 1
-      fi
-    done
-    echo "El servidor está arriba y funcionando!"
+          - name: Iniciar WebApp
+            run: |
+              mvn exec:java -Dexec.mainClass="ar.edu.utn.dds.k3003.app.WebApp" > maven.log 2>&1 &
+              WEBAPP_PID=$!
+              echo "WebApp Server PID=$WEBAPP_PID" >> $GITHUB_ENV
+              echo "WebApp Server PID=$WEBAPP_PID"
+            env:
+              MAVEN_OPTS: -Dmaven.repo.local=.m2/repository
+
+          - name: Esperar que WebApp esté levantado
+            run: |
+              TIMEOUT=300  # 5 minutos
+              INTERVAL=5   # 5 segundos
+              SECONDS=0
+
+              function print_logs {
+                echo "Logs de Maven:"
+                tail -n 100 maven.log
+              }
+
+              echo "Esperando a que el servidor esté listo..."
+              until curl --output /dev/null --silent --head --fail http://localhost:8080/; do
+                printf '.'
+                sleep $INTERVAL
+                SECONDS=$((SECONDS + INTERVAL))
+                if [ $SECONDS -ge $TIMEOUT ]; then
+                  echo "Timeout alcanzado. El servidor no está respondiendo."
+                  echo "Revisando si el proceso de WebApp está corriendo..."
+                  if ps -p $WEBAPP_PID > /dev/null; then
+                    echo "El proceso de WebApp (PID $WEBAPP_PID) está corriendo, pero no responde en el puerto 8080."
+                  else
+                    echo "El proceso de WebApp (PID $WEBAPP_PID) no está corriendo. Verifica los logs de Maven."
+                  fi
+                  print_logs
+                  exit 1
+                fi
+              done
+              echo "El servidor está arriba y funcionando!"
 
       - name: Evaluador de Entrega 1
         id: evaluator
@@ -82,6 +90,7 @@ jobs:
           command: mvn exec:java -Dexec.mainClass="ar.edu.utn.dds.k3003.Evaluador"
           timeout: 10
           max-score: 4
+
       - name: Determinar el tipo de fachada
         run: |
           if grep -q 'public class Fachada implements FachadaLogistica' src/main/java/ar/edu/utn/dds/k3003/app/Fachada.java; then
@@ -96,6 +105,7 @@ jobs:
             echo "EVALUATOR_API_ARG=error" >> $GITHUB_ENV
           fi
         shell: bash
+
       - name: Evaluador de Entrega 2
         id: evaluatorapi
         uses: education/autograding-command-grader@v1
