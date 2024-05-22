@@ -11,6 +11,7 @@ import ar.edu.utn.dds.k3003.repositories.ColaboradorMapper;
 import ar.edu.utn.dds.k3003.repositories.ColaboradorRepository;
 import lombok.Getter;
 import lombok.Setter;
+import ar.edu.utn.dds.k3003.facades.FachadaColaboradores;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.NoSuchElementException;
 
 @Getter
 @Setter
-public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradores {
+public class Fachada implements FachadaColaboradores {
     
     private ColaboradorRepository colaboradorRepository;
     private ColaboradorMapper colaboradorMapper;
