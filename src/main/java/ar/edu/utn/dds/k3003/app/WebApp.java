@@ -31,6 +31,10 @@ public class WebApp {
 		app.patch("/colaboradores/{id}", colaboradorController::formasDeColaborar);
 		app.get("/colaboradores/{id}/puntos", colaboradorController::puntos);
 		app.put("/formula", colaboradorController::coeficientes);
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            app.stop();
+            System.out.println("WebApp detenida correctamente.");
+        }));
 	}
 	public static ObjectMapper createObjectMapper() {
 	    var objectMapper = new ObjectMapper();
