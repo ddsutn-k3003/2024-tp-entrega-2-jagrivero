@@ -26,6 +26,7 @@ public class WebApp {
 		Javalin app = Javalin.create().start(port);
 		ColaboradorController colaboradorController= new ColaboradorController(fachada);
 		System.out.println("La webApp esta en el puerto "+ port + ".");
+		app.head("/", colaboradorController::cabecear);
 		app.post("/colaboradores", colaboradorController::agregar);
 		app.get("/colaboradores/{id}", colaboradorController::recuperar);
 		app.patch("/colaboradores/{id}", colaboradorController::formasDeColaborar);

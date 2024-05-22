@@ -24,7 +24,9 @@ public class ColaboradorController {
 	    contexto.json(puntosCalculados);
 	} 
 	//TODO ESTE DE ABAJO
-	
+	public void cabecear(@NotNull Context contexto) {
+		contexto.result("OK");
+	}
 	public void coeficientes(@NotNull Context contexto) {
 	        Formula formula = contexto.bodyAsClass(Formula.class);
 	        double pesosDonados = Double.parseDouble(formula.pesosDonados);
