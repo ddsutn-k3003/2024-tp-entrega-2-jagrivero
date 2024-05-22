@@ -232,3 +232,4 @@ buildNumber.properties
 # End of https://www.toptal.com/developers/gitignore/api/java,maven,web,intellij+iml,eclipse,git
 
 .idea
+/.apt_generated_tests/
