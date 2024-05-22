@@ -22,7 +22,7 @@ public class WebApp {
 	    fachada.setLogisticaProxy(new LogisticaProxy(objectMapper));
 	    fachada.setViandasProxy(new ViandasProxy(objectMapper));
 	    //TODO VERIFICAR
-		Integer port = Integer.parseInt( System.getenv().getOrDefault("port", "8087"));
+		Integer port = Integer.parseInt( System.getenv().getOrDefault("port", "8080"));
 		Javalin app = Javalin.create().start(port);
 		ColaboradorController colaboradorController= new ColaboradorController(fachada);
 		System.out.println("La webApp esta en el puerto "+ port + ".");
