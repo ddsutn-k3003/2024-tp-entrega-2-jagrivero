@@ -25,16 +25,12 @@ public class WebApp {
 		Integer port = Integer.parseInt( System.getenv().getOrDefault("port", "8080"));
 		Javalin app = Javalin.create().start(port);
 		ColaboradorController colaboradorController= new ColaboradorController(fachada);
-		
+		System.out.println("La webApp esta en el puerto "+ port + ".");
 		app.post("/colaboradores", colaboradorController::agregar);
 		app.get("/colaboradores/{id}", colaboradorController::recuperar);
 		app.patch("/colaboradores/{id}", colaboradorController::formasDeColaborar);
 		app.get("/colaboradores/{id}/puntos", colaboradorController::puntos);
 		app.put("/formula", colaboradorController::coeficientes);
-		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            app.stop();
-            System.out.println("WebApp detenida correctamente.");
-        }));
 	}
 	public static ObjectMapper createObjectMapper() {
 	    var objectMapper = new ObjectMapper();

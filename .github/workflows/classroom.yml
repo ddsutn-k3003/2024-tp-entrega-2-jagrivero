@@ -36,8 +36,8 @@ jobs:
       - name: Enciende el WebApp
         id: start-webapp
         run: |
-          mvn exec:java -Dexec.mainClass="ar.edu.utn.dds.k3003.app.WebApp" &
-          echo "WebApp Server PID=$!" >> $GITHUB_ENV
+          mvn exec:java -Dexec.mainClass="ar.edu.utn.dds.k3003.app.WebApp" & PID=$!
+          echo "WebApp Server PID=$PID" >> $GITHUB_ENV
         env:
           MAVEN_OPTS: -Dmaven.repo.local=.m2/repository
       - name: Espera que el WebApp esté levantado
